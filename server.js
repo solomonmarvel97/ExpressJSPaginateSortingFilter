@@ -103,6 +103,34 @@ app.get("/books/sort", async (req, res) => {
       }
 })
 
+
+
+// Using all operations in a single route
+app.get("/books", async (req, res) => {
+  try {
+    // Get query parameters
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 10;
+    const sort = req.query.sort || "asc";
+    const filter = req.query.filter || {};
+
+    // filtering using the filter params
+    await Book.find(filter)
+      // sorting using the sort value
+      .sort({ createdAt: sort })
+      // pagination using the skip and limit params
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .then((data) => res.json(data))
+      .catch((err) => res.status(500).json({ message: err.message }));
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
+
+
 app.listen(port, () => {
   console.log(`Our app runs on port ${port}`);
 });
