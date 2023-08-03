@@ -3,7 +3,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 
 const app = express();
-const port = process.env.PORT || 3000; // default would be 3000
+
+const log = console.log
 
 // connect to mongodb using mongoose
 mongoose.connect("mongodb://localhost:27017/books", { useNewUrlParser: true });
@@ -24,7 +25,7 @@ app.use(express.json());
 app.post("/books", async (req, res) => {
   // data validation with joi or ajv or zod
   const book = new Book(req.body);
-  
+
   try {
     const savedBook = await book.save();
     res.status(201).json(savedBook);
@@ -85,7 +86,7 @@ app.get("/books/paginate", async (req, res) => {
     const totalBooks = await Book.countDocuments();
     // fetch all books and applied the pagination rules
     const books = await Book.find().skip(skip).limit(pageSize)
-    res.json({books, totalBooks})
+    res.json({ books, totalBooks })
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -93,14 +94,14 @@ app.get("/books/paginate", async (req, res) => {
 
 // sorting - work with the sortField or sortOrder (asc, desc)
 app.get("/books/sort", async (req, res) => {
-    try {
-        const sortField = req.query.sort || "title";
-        const sortOrder = req.query.order === "desc" ? -1 : 1
-        const books = await Book.find().sort({[sortField]: sortOrder})
-        res.json(books)
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-      }
+  try {
+    const sortField = req.query.sort || "title";
+    const sortOrder = req.query.order === "desc" ? -1 : 1
+    const books = await Book.find().sort({ [sortField]: sortOrder })
+    res.json(books)
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 })
 
 
@@ -130,7 +131,8 @@ app.get("/books", async (req, res) => {
 
 
 
+const port = process.env.PORT || 3001; // default would be 3000
 
 app.listen(port, () => {
-  console.log(`Our app runs on port ${port}`);
+  log(`Our app runs on port ${port}`);
 });
